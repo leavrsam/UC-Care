@@ -1,0 +1,81 @@
+:root {
+  /* Premium Dark Theme Palette */
+  --bg-app: #0f0f11;
+  --bg-card: rgba(30, 30, 35, 0.7);
+  --bg-card-hover: rgba(40, 40, 45, 0.8);
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a5;
+  --text-muted: #606065;
+  --nav-bg: rgba(20, 20, 25, 0.9);
+
+  /* Brand Colors */
+  --color-pill: #a78bfa;
+  /* Soft Violet */
+  --color-pill-glow: rgba(167, 139, 250, 0.3);
+  --color-water: #22d3ee;
+  /* Cyan */
+  --color-water-glow: rgba(34, 211, 238, 0.3);
+  --color-stool: #d4a373;
+  /* Muted Bronze/Brown */
+  --color-stool-glow: rgba(212, 163, 115, 0.3);
+
+  /* UI Tokens */
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 8px;
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --backdrop-blur: 12px;
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+#root {
+  max-width: 600px;
+  /* Mobile focused max width */
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: 100px;
+  /* Space for nav */
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Utilities */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(var(--backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+button {
+  font-family: var(--font-family);
+}

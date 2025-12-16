@@ -86,3 +86,23 @@ export const deleteMedication = (id) => {
   localStorage.setItem(MED_STORAGE_KEY, JSON.stringify(newMeds));
   return newMeds;
 };
+export const deleteEntry = (type, id) => {
+  const data = getStorageData();
+  if (data[type]) {
+    data[type] = data[type].filter(item => item.id !== id);
+    saveStorageData(data);
+  }
+  return data;
+};
+
+export const updateEntry = (type, id, updatedFields) => {
+  const data = getStorageData();
+  if (data[type]) {
+    const index = data[type].findIndex(item => item.id === id);
+    if (index !== -1) {
+      data[type][index] = { ...data[type][index], ...updatedFields };
+      saveStorageData(data);
+    }
+  }
+  return data;
+};

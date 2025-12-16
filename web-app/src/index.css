@@ -1,4 +1,6 @@
 :root {
+  color-scheme: dark;
+  /* Force native controls like scrollbars and pickers to dark mode */
   /* Premium Dark Theme Palette */
   --bg-app: #0f0f11;
   --bg-card: rgba(30, 30, 35, 0.7);
@@ -78,4 +80,9 @@ body {
 
 button {
   font-family: var(--font-family);
+}
+
+/* Hide nav bar when modal is open */
+body.modal-open nav {
+  display: none !important;
 }

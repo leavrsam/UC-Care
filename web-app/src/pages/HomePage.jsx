@@ -42,24 +42,109 @@ const HomePage = ({ onNavigate }) => {
         return true;
     });
 
+    // Export Logic
+    const handleExport = () => {
+        if (filteredFeed.length === 0) {
+            alert('No data to export!');
+            return;
+        }
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        let headers = [];
+        let rows = [];
+
+        // Define Headers based on Category
+        if (categoryFilter === 'Stool') {
+            headers = ['Date', 'Time', 'Type', 'Bristol', 'Color', 'Notes'];
+        } else if (categoryFilter === 'Water') {
+            headers = ['Date', 'Time', 'Type', 'Amount (oz)'];
+        } else if (categoryFilter === 'Pills') {
+            headers = ['Date', 'Time', 'Type', 'Details'];
+        } else {
+            // All / Mixed
+            headers = ['Date', 'Time', 'Type', 'Details'];
+        }
+
+        csvContent += headers.join(",") + "\n";
+
+        // Generate Rows
+        filteredFeed.forEach(item => {
+            const d = new Date(item.timestamp);
+            const dateStr = d.toLocaleDateString();
+            const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            let row = [];
+
+            if (categoryFilter === 'Stool') {
+                row = [
+                    dateStr,
+                    timeStr,
+                    'Stool',
+                    item.bristol || '',
+                    item.color || '',
+                    `"${(item.notes || '').replace(/"/g, '""')}"` // Escape quotes
+                ];
+            } else if (categoryFilter === 'Water') {
+                row = [
+                    dateStr,
+                    timeStr,
+                    'Water',
+                    item.amount || 0
+                ];
+            } else if (categoryFilter === 'Pills') {
+                let details = `"${(item.medications || []).map(m => `${m.name} (${m.dosage})`).join(', ')}"`;
+                row = [
+                    dateStr,
+                    timeStr,
+                    'Pills',
+                    details
+                ];
+            } else {
+                // All - Generic
+                let details = '';
+                if (item.type === 'stool') details = `Bristol: ${item.bristol}`;
+                if (item.type === 'water') details = `${item.amount} oz`;
+                if (item.type === 'pills') details = (item.medications || []).map(m => m.name).join(', ');
+
+                row = [
+                    dateStr,
+                    timeStr,
+                    item.type,
+                    `"${details.replace(/"/g, '""')}"`
+                ];
+            }
+            csvContent += row.join(",") + "\n";
+        });
+
+        // Trigger Download
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `export_${categoryFilter.toLowerCase()}_${timeFilter.toLowerCase()}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="fade-in" style={{ paddingBottom: '20px' }}>
 
             {/* 0. EXPORT BUTTON ROW */}
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
-                <button style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    color: 'var(--color-pill)',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    fontSize: '0.8rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                }}>
+                <button
+                    onClick={handleExport}
+                    style={{
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        color: 'var(--color-pill)',
+                        padding: '8px 16px',
+                        borderRadius: '8px',
+                        fontSize: '0.8rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }}>
                     Export CSV 📥
                 </button>
             </div>

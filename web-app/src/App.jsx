@@ -80,7 +80,7 @@ function App() {
         <NavButton icon="💊" label="Pills" active={activeTab === 'pills'} onClick={() => setActiveTab('pills')} />
         <NavButton icon="💧" label="Water" active={activeTab === 'water'} onClick={() => setActiveTab('water')} />
         <NavButton icon="🚽" label="Stool" active={activeTab === 'stool'} onClick={() => setActiveTab('stool')} />
-        <NavButton icon="📈" label="Stats" active={activeTab === 'stats'} onClick={() => setActiveTab('stats')} />
+        <NavButton icon="📈" label="Charts" active={activeTab === 'stats'} onClick={() => setActiveTab('stats')} />
       </nav>
     </div>
   );

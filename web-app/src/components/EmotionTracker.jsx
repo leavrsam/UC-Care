@@ -70,18 +70,30 @@ const EmotionTracker = () => {
             {/* 1. Mood Selector */}
             <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px', textAlign: 'center' }}>
                 <div style={{ marginBottom: '16px', color: 'var(--text-secondary)' }}>How are you feeling?</div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '100%', margin: '0 8px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '2px', maxWidth: '100%', overflowX: 'visible' }}>
                     {moods.map((m) => (
                         <div key={m.level}
                             onClick={() => setSelectedMood(m.level)}
                             style={{
                                 cursor: 'pointer',
-                                transform: selectedMood === m.level ? 'scale(1.2)' : 'scale(1)',
-                                opacity: selectedMood === m.level ? 1 : 0.5,
-                                transition: 'all 0.2s'
+                                transform: selectedMood === m.level ? 'scale(1.1) translateY(-4px)' : 'scale(1)',
+                                opacity: selectedMood === m.level ? 1 : 0.6,
+                                transition: 'all 0.2s',
+                                flex: 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                minWidth: '0'
                             }}>
-                            <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>{m.icon}</div>
-                            <div style={{ fontSize: '0.7rem', fontWeight: 'bold', color: selectedMood === m.level ? m.color : 'var(--text-muted)' }}>{m.label}</div>
+                            <div style={{ fontSize: 'clamp(1.5rem, 9vw, 2.5rem)', lineHeight: 1, marginBottom: '4px' }}>{m.icon}</div>
+                            <div style={{
+                                fontSize: 'clamp(0.5rem, 2.5vw, 0.7rem)',
+                                fontWeight: 'bold',
+                                color: selectedMood === m.level ? m.color : 'var(--text-muted)',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                            }}>{m.label}</div>
                         </div>
                     ))}
                 </div>

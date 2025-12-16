@@ -23,6 +23,13 @@ const FeedItem = ({ type, data, timestamp }) => {
         icon = '💩';
         title = 'Stool';
         details = `Type ${data.bristol || '?'}`;
+    } else if (type === 'emotions') {
+        color = 'var(--color-mood)';
+        const moodIcons = ['unknown', '😭', '😟', '😐', '🙂', '🤩'];
+        icon = moodIcons[data.mood] || '😐';
+        title = 'Mood';
+        details = data.tags ? data.tags.join(', ') : '';
+        if (!details && data.notes) details = 'Note added';
     }
 
     return (

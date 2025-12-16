@@ -73,10 +73,12 @@ const PillTracker = () => {
                         border: 'none',
                         color: '#fff',
                         width: '32px', height: '32px',
+
                         borderRadius: '50%',
-                        cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '1.2rem'
+                        fontSize: '1.2rem',
+                        padding: 0,
+                        lineHeight: '1'
                     }}
                 >
                     +
@@ -100,6 +102,36 @@ const PillTracker = () => {
                 ))
             )}
 
+            {/* Log History */}
+            <div style={{ marginTop: '32px' }}>
+                <h3 style={{ color: 'var(--text-secondary)', marginBottom: '16px' }}>Log History (Today)</h3>
+                {logs.length === 0 ? (
+                    <div style={{ padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                        No medications taken today.
+                    </div>
+                ) : (
+                    <div className="glass-panel" style={{ padding: '8px' }}>
+                        {logs.slice().reverse().map((entry, idx) => (
+                            <div key={idx} style={{
+                                padding: '12px',
+                                borderBottom: idx !== logs.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
+                            }}>
+                                <div>
+                                    <div style={{ fontWeight: 'bold', color: '#fff' }}>{entry.name || 'Unknown'}</div>
+                                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{entry.dosage}</div>
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                                    {new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
             <button
                 onClick={() => { setEditMed(null); setShowModal(true); }}
                 style={floatBtnStyle}
@@ -120,17 +152,20 @@ const PillTracker = () => {
 
 const floatBtnStyle = {
     position: 'fixed',
-    bottom: '90px', // Above nav bar
+    bottom: '120px', // Raised to avoid nav overlap
     left: '50%',
     transform: 'translateX(-50%)',
-    background: '#3b82f6', // Bright Blue
+    background: 'var(--color-accent-orange, #d97706)', // Matched to page theme
     color: '#fff',
     border: 'none',
     padding: '16px 32px',
     borderRadius: '32px',
     fontWeight: 'bold',
     fontSize: '1rem',
-    boxShadow: '0 8px 20px rgba(59, 130, 246, 0.5)',
+    borderRadius: '32px',
+    fontWeight: 'bold',
+    fontSize: '1rem',
+    boxShadow: '0 8px 20px rgba(217, 119, 6, 0.5)',
     zIndex: 50,
     cursor: 'pointer',
     width: '80%',

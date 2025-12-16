@@ -6,12 +6,12 @@ export const getStorageData = () => {
     const parsed = raw ? JSON.parse(raw) : null;
 
     if (!parsed || typeof parsed !== 'object') {
-      return { pills: [], water: [], stool: [] };
+      return { pills: [], water: [], stool: [], emotions: [] };
     }
     return parsed;
   } catch (error) {
     console.error('Error reading storage', error);
-    return { pills: [], water: [], stool: [] };
+    return { pills: [], water: [], stool: [], emotions: [] };
   }
 };
 

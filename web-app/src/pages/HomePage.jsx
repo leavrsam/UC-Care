@@ -15,9 +15,10 @@ const HomePage = ({ onNavigate }) => {
         const pills = (storage.pills || []).map(d => ({ ...d, type: 'pills' }));
         const water = (storage.water || []).map(d => ({ ...d, type: 'water' }));
         const stool = (storage.stool || []).map(d => ({ ...d, type: 'stool' }));
+        const emotions = (storage.emotions || []).map(d => ({ ...d, type: 'emotions' }));
 
         // Merge and sort desc
-        const sorted = [...pills, ...water, ...stool].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        const sorted = [...pills, ...water, ...stool, ...emotions].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         setAllData(sorted);
     }, []);
 
@@ -26,8 +27,12 @@ const HomePage = ({ onNavigate }) => {
     const todayPills = allData.filter(d => d.type === 'pills' && new Date(d.timestamp).toDateString() === todayStr);
     const todayWater = allData.filter(d => d.type === 'water' && new Date(d.timestamp).toDateString() === todayStr);
     const todayStool = allData.filter(d => d.type === 'stool' && new Date(d.timestamp).toDateString() === todayStr);
+    const todayMoods = allData.filter(d => d.type === 'emotions' && new Date(d.timestamp).toDateString() === todayStr);
 
     const waterTotal = todayWater.reduce((acc, curr) => acc + curr.amount, 0);
+    const avgMood = todayMoods.length > 0
+        ? (todayMoods.reduce((acc, curr) => acc + (curr.mood || 3), 0) / todayMoods.length).toFixed(1)
+        : '-';
 
     // Filter Logic Breakdown
     const filteredFeed = allData.filter(item => {
@@ -37,7 +42,10 @@ const HomePage = ({ onNavigate }) => {
         // (Simplified Week/Month logic for prototype - treated as "All" for now or strict 'Today')
 
         // 2. Category Filter
-        if (categoryFilter !== 'All' && item.type !== categoryFilter.toLowerCase()) return false;
+        if (categoryFilter !== 'All') {
+            if (categoryFilter === 'Mood' && item.type !== 'emotions') return false;
+            if (categoryFilter !== 'Mood' && item.type !== categoryFilter.toLowerCase()) return false;
+        }
 
         return true;
     });
@@ -49,9 +57,8 @@ const HomePage = ({ onNavigate }) => {
             return;
         }
 
-        let csvContent = "data:text/csv;charset=utf-8,";
+        let csvContent = "";
         let headers = [];
-        let rows = [];
 
         // Define Headers based on Category
         if (categoryFilter === 'Stool') {
@@ -60,6 +67,8 @@ const HomePage = ({ onNavigate }) => {
             headers = ['Date', 'Time', 'Type', 'Amount (oz)'];
         } else if (categoryFilter === 'Pills') {
             headers = ['Date', 'Time', 'Type', 'Details'];
+        } else if (categoryFilter === 'Mood') {
+            headers = ['Date', 'Time', 'Type', 'Mood Level', 'Tags', 'Notes'];
         } else {
             // All / Mixed
             headers = ['Date', 'Time', 'Type', 'Details'];
@@ -81,7 +90,7 @@ const HomePage = ({ onNavigate }) => {
                     'Stool',
                     item.bristol || '',
                     item.color || '',
-                    `"${(item.notes || '').replace(/"/g, '""')}"` // Escape quotes
+                    `"${(item.notes || '').replace(/"/g, '""')}"`
                 ];
             } else if (categoryFilter === 'Water') {
                 row = [
@@ -98,12 +107,22 @@ const HomePage = ({ onNavigate }) => {
                     'Pills',
                     details
                 ];
+            } else if (categoryFilter === 'Mood') {
+                row = [
+                    dateStr,
+                    timeStr,
+                    'Mood',
+                    item.mood || 3,
+                    `"${(item.tags || []).join(', ')}"`,
+                    `"${(item.notes || '').replace(/"/g, '""')}"`
+                ];
             } else {
                 // All - Generic
                 let details = '';
                 if (item.type === 'stool') details = `Bristol: ${item.bristol}`;
                 if (item.type === 'water') details = `${item.amount} oz`;
                 if (item.type === 'pills') details = (item.medications || []).map(m => m.name).join(', ');
+                if (item.type === 'emotions') details = `Mood: ${item.mood}`;
 
                 row = [
                     dateStr,
@@ -115,14 +134,26 @@ const HomePage = ({ onNavigate }) => {
             csvContent += row.join(",") + "\n";
         });
 
-        // Trigger Download
-        const encodedUri = encodeURI(csvContent);
+        // Trigger Download with BOM for Excel support
+        const blob = new Blob(["\ufeff", csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
+        link.setAttribute("href", url);
         link.setAttribute("download", `export_${categoryFilter.toLowerCase()}_${timeFilter.toLowerCase()}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+
+    // Helper to get icon for category
+    const getExportIcon = () => {
+        switch (categoryFilter) {
+            case 'Water': return '💧';
+            case 'Pills': return '💊';
+            case 'Stool': return '💩';
+            case 'Mood': return '🙂';
+            default: return '📥';
+        }
     };
 
     return (
@@ -145,12 +176,20 @@ const HomePage = ({ onNavigate }) => {
                         alignItems: 'center',
                         gap: '8px'
                     }}>
-                    Export CSV 📥
+                    Export CSV {getExportIcon()}
                 </button>
             </div>
 
             {/* 1. TOP SUMMARY ROW (screenshot style) */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', marginBottom: '24px' }}>
+                {/* Mood Card */}
+                <div style={summaryCardStyle} onClick={() => onNavigate('mood')}>
+                    <div style={{ color: 'var(--color-mood)', fontSize: '0.9rem', marginBottom: '8px' }}>Mood</div>
+                    <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--color-mood)' }}>{avgMood}</div>
+                        <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>avg today</div>
+                    </div>
+                </div>
                 {/* Water Card */}
                 <div style={summaryCardStyle} onClick={() => onNavigate('water')}>
                     <div style={{ color: 'var(--color-water)', fontSize: '0.9rem', marginBottom: '8px' }}>Water</div>
@@ -216,6 +255,7 @@ const HomePage = ({ onNavigate }) => {
                 <TabButton active={categoryFilter === 'All'} onClick={() => setCategoryFilter('All')} label="All" />
                 <TabButton active={categoryFilter === 'Water'} onClick={() => setCategoryFilter('Water')} label="Water" icon="💧" />
                 <TabButton active={categoryFilter === 'Pills'} onClick={() => setCategoryFilter('Pills')} label="Pills" icon="💊" />
+                <TabButton active={categoryFilter === 'Mood'} onClick={() => setCategoryFilter('Mood')} label="Mood" icon="🙂" />
                 <TabButton active={categoryFilter === 'Stool'} onClick={() => setCategoryFilter('Stool')} label="Stool" icon="💩" />
             </div>
 

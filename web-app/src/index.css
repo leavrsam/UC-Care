@@ -20,6 +20,9 @@
   --color-stool: #d4a373;
   /* Muted Bronze/Brown */
   --color-stool-glow: rgba(212, 163, 115, 0.3);
+  --color-mood: #f472b6;
+  /* Pink */
+  --color-mood-glow: rgba(244, 114, 182, 0.3);
 
   /* UI Tokens */
   --radius-lg: 24px;

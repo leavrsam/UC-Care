@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
-    ScatterChart, Scatter
+    ScatterChart, Scatter, LineChart, Line, CartesianGrid
 } from 'recharts';
 import { getStorageData } from '../utils/storage';
 
@@ -33,11 +33,12 @@ const StatsView = () => {
     const [showIcons, setShowIcons] = useState(false);
 
     // Process Data - shared between both charts
-    const { barData, scatterData, xLabels, waterData, pillData } = useMemo(() => {
+    const { barData, scatterData, xLabels, waterData, pillData, moodData } = useMemo(() => {
         const storage = getStorageData();
         const stools = storage.stool || [];
         const water = storage.water || [];
         const pills = storage.pills || [];
+        const emotions = storage.emotions || [];
         const now = new Date();
         const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
@@ -63,6 +64,7 @@ const StatsView = () => {
         const filteredStools = stools.filter(s => new Date(s.timestamp) >= startDate);
         const filteredWater = water.filter(s => new Date(s.timestamp) >= startDate);
         const filteredPills = pills.filter(s => new Date(s.timestamp) >= startDate);
+        const filteredEmotions = emotions.filter(s => new Date(s.timestamp) >= startDate);
 
         // --- Generate X-Axis Labels (shared by both charts) ---
         const xLabels = [];
@@ -89,6 +91,7 @@ const StatsView = () => {
         const barData = xLabels.map(label => ({ label, count: 0 }));
         const waterData = xLabels.map(label => ({ label, amount: 0 }));
         const pillData = xLabels.map(label => ({ label, count: 0 }));
+        const moodData = xLabels.map(label => ({ label, totalMood: 0, count: 0, avg: null }));
 
         filteredStools.forEach(s => {
             const d = new Date(s.timestamp);
@@ -130,6 +133,21 @@ const StatsView = () => {
             }
         });
 
+        filteredEmotions.forEach(s => {
+            const d = new Date(s.timestamp);
+            let idx;
+            if (view === 'Today') {
+                idx = labelToIndex.get(d.getHours());
+            } else {
+                idx = labelToIndex.get(d.toDateString());
+            }
+            if (idx !== undefined && moodData[idx]) {
+                moodData[idx].totalMood += (s.mood || 3);
+                moodData[idx].count++;
+                moodData[idx].avg = parseFloat((moodData[idx].totalMood / moodData[idx].count).toFixed(1));
+            }
+        });
+
         // --- Scatter Data (uses same X-axis labels via index) ---
         const scatterData = filteredStools.map(s => {
             const d = new Date(s.timestamp);
@@ -161,7 +179,7 @@ const StatsView = () => {
             }
         }).filter(p => p.x !== undefined);
 
-        return { barData, scatterData, xLabels, waterData, pillData };
+        return { barData, scatterData, xLabels, waterData, pillData, moodData };
 
     }, [view]);
 
@@ -280,7 +298,7 @@ const StatsView = () => {
             </div>
 
             {/* Plop Time of Day Chart */}
-            <div className="glass-panel" style={{ padding: '20px' }}>
+            <div className="glass-panel" style={{ padding: '20px', marginBottom: '20px' }}>
                 <div style={{ marginBottom: '16px' }}>
                     <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Plop Time of Day Chart</h3>
                     <p style={{ margin: '4px 0 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
@@ -289,7 +307,7 @@ const StatsView = () => {
                 </div>
                 <div style={{ height: '250px', width: '100%' }}>
                     <ResponsiveContainer width="100%" height="100%">
-                        <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 10 }}>
+                        <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: -25 }}>
                             <XAxis
                                 type="number"
                                 dataKey="x"
@@ -411,6 +429,52 @@ const StatsView = () => {
                                 ))}
                             </Bar>
                         </BarChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+
+            {/* Mood Trends Chart */}
+            <div className="glass-panel" style={{ padding: '20px', marginBottom: '80px' }}>
+                <div style={{ marginBottom: '16px' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Mood Trends</h3>
+                    <p style={{ margin: '4px 0 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                        Average mood over time (1-5 Scale)
+                    </p>
+                </div>
+                <div style={{ height: '200px', width: '100%' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={moodData} margin={{ top: 20, right: 20, bottom: 0, left: -32 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                            <XAxis
+                                dataKey="label"
+                                stroke="var(--text-muted)"
+                                tick={{ fill: 'var(--text-muted)', fontSize: 10 }}
+                                tickLine={false} axisLine={false}
+                                interval={getAxisInterval()}
+                            />
+                            <YAxis
+                                domain={[1, 5]}
+                                ticks={[1, 2, 3, 4, 5]}
+                                stroke="var(--text-muted)"
+                                tick={{ fill: 'var(--text-muted)', fontSize: 10 }}
+                                tickLine={false} axisLine={false}
+                            />
+                            <Tooltip
+                                contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                                itemStyle={{ color: '#fff' }}
+                                cursor={{ stroke: 'rgba(255,255,255,0.2)' }}
+                                formatter={(value) => [value, 'Avg Mood']}
+                            />
+                            <Line
+                                type="monotone"
+                                dataKey="avg"
+                                stroke="var(--color-mood)"
+                                strokeWidth={3}
+                                dot={{ fill: 'var(--color-mood)', r: 4 }}
+                                activeDot={{ r: 6 }}
+                                connectNulls
+                            />
+                        </LineChart>
                     </ResponsiveContainer>
                 </div>
             </div>

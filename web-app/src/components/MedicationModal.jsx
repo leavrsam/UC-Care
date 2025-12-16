@@ -38,7 +38,7 @@ const MedicationModal = ({ med, onClose, onSave }) => {
     return (
         <div style={overlayStyle}>
             <div style={modalStyle}>
-                <h2 style={{ marginBottom: '20px', color: '#000' }}>{med ? 'Edit Medication' : 'Add Medication'}</h2>
+                <h2 style={{ marginBottom: '20px', color: '#fff' }}>{med ? 'Edit Medication' : 'Add Medication'}</h2>
 
                 {/* Name & Dosage */}
                 <input
@@ -113,39 +113,41 @@ const MedicationModal = ({ med, onClose, onSave }) => {
 
 const overlayStyle = {
     position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-    background: 'rgba(0,0,0,0.6)',
+    background: 'rgba(0,0,0,0.8)',
     backdropFilter: 'blur(4px)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     zIndex: 1000
 };
 
 const modalStyle = {
-    background: '#e5e7eb', // Light grey as per screenshot modal
+    background: '#1a1a1e',
     padding: '24px',
     borderRadius: '24px',
     width: '90%',
     maxWidth: '400px',
-    color: '#000',
-    boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
+    color: '#fff',
+    border: '1px solid rgba(255,255,255,0.1)',
+    boxShadow: '0 20px 40px rgba(0,0,0,0.6)'
 };
 
 const inputStyle = {
     width: '100%', padding: '12px', marginBottom: '12px',
-    borderRadius: '12px', border: '1px solid #ccc',
-    fontSize: '1rem', background: '#fff'
+    borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)',
+    fontSize: '1rem', background: 'rgba(255,255,255,0.05)', color: '#fff',
+    boxSizing: 'border-box'
 };
 
-const labelStyle = { fontWeight: '600', marginBottom: '8px', display: 'block' };
+const labelStyle = { fontWeight: '600', marginBottom: '8px', display: 'block', color: 'var(--text-secondary)' };
 
-const toggleStyle = { flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #ccc', background: 'transparent', cursor: 'pointer' };
-const activeToggleStyle = { ...toggleStyle, background: '#3b82f6', color: '#fff', borderColor: '#3b82f6' };
+const toggleStyle = { flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)', cursor: 'pointer' };
+const activeToggleStyle = { ...toggleStyle, background: 'var(--color-pill)', color: '#fff', borderColor: 'var(--color-pill)' };
 
-const selectStyle = { width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #ccc', fontSize: '1rem' };
-const timeInputStyle = { flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '1rem' };
+const selectStyle = { width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '1rem', background: 'rgba(255,255,255,0.05)', color: '#fff', boxSizing: 'border-box' };
+const timeInputStyle = { flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '1rem', background: 'rgba(255,255,255,0.05)', color: '#fff' };
 
-const saveBtnStyle = { flex: 1, padding: '14px', borderRadius: '12px', background: '#3b82f6', color: '#fff', border: 'none', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem' };
-const cancelBtnStyle = { flex: 1, padding: '14px', borderRadius: '12px', background: '#ccc', color: '#000', border: 'none', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem' };
-const secondaryBtnStyle = { width: '100%', padding: '8px', borderRadius: '8px', background: '#dbeafe', color: '#3b82f6', border: 'none', fontWeight: '600', cursor: 'pointer' };
-const removeBtnStyle = { background: 'none', border: 'none', color: 'red', fontSize: '1.5rem', cursor: 'pointer' };
+const saveBtnStyle = { flex: 1, padding: '14px', borderRadius: '12px', background: 'var(--color-pill)', color: '#fff', border: 'none', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem' };
+const cancelBtnStyle = { flex: 1, padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem' };
+const secondaryBtnStyle = { width: '100%', padding: '8px', borderRadius: '8px', background: 'rgba(255,255,255,0.1)', color: 'var(--color-pill)', border: 'none', fontWeight: '600', cursor: 'pointer', boxSizing: 'border-box' };
+const removeBtnStyle = { background: 'none', border: 'none', color: '#ff4444', fontSize: '1.5rem', cursor: 'pointer' };
 
 export default MedicationModal;

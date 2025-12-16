@@ -83,7 +83,7 @@ const MedicationCard = ({ med, onTake, onEdit, onDelete, lastLog }) => {
                     </button>
                 ) : (
                     <button style={btnUndoStyle} onClick={() => onTake(med, true)}>
-                        Unmark Taken
+                        Undo
                     </button>
                 )}
 

@@ -111,7 +111,7 @@ const StoolTracker = () => {
         <div className="stool-page">
             {/* Summary Card */}
             <div className="stool-summary-card">
-                <p className="stool-summary-text">Today: {todayCount} bowel movements</p>
+                <p className="stool-summary-text" style={{ color: '#8D6E63' }}>Today: {todayCount} bowel movements</p>
             </div>
 
             {/* List of Entries */}
@@ -119,8 +119,11 @@ const StoolTracker = () => {
                 {entries.map(entry => (
                     <div key={entry.id} className="stool-log-card">
                         <div className="stool-log-header">
+                            <span className="stool-type-badge" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <img src={getBristolIcon(entry.bristol)} alt="" style={{ width: '24px', height: '24px' }} />
+                                Type {entry.bristol}
+                            </span>
                             <span className="stool-time">{new Date(entry.timestamp).toLocaleDateString()} at {entry.time}</span>
-                            <span className="stool-type-badge">Type {entry.bristol}</span>
                         </div>
 
                         <div className="stool-details">
@@ -137,9 +140,10 @@ const StoolTracker = () => {
                             )}
                         </div>
 
-                        <div className="stool-actions">
-                            <button className="btn-edit" onClick={() => handleEdit(entry)}>Edit</button>
-                            <button className="btn-delete" onClick={() => handleDelete(entry.id)}>Delete</button>
+                        <div className="stool-actions" style={{ display: 'grid', gridTemplateColumns: '40px 1fr 40px', gap: '12px', alignItems: 'center', marginTop: '16px' }}>
+                            <div></div>
+                            <button className="btn-edit" onClick={() => handleEdit(entry)} style={{ width: '100%', background: '#8D6E63', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px', fontWeight: '600', cursor: 'pointer' }}>Edit</button>
+                            <button className="btn-delete" onClick={() => handleDelete(entry.id)} style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)', color: '#ff4444', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1.2rem', padding: 0 }}>🗑️</button>
                         </div>
                     </div>
                 ))}
@@ -151,7 +155,7 @@ const StoolTracker = () => {
                     setEditingId(null);
                     setFormData(getInitialFormData());
                     setShowModal(true);
-                }}>
+                }} style={{ background: '#8D6E63' }}>
                     +
                 </button>
             )}

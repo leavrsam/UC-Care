@@ -3,7 +3,9 @@ import HomePage from './pages/HomePage';
 import PillsPage from './pages/PillsPage';
 import WaterPage from './pages/WaterPage';
 import StoolPage from './pages/StoolPage';
+
 import StatsPage from './pages/StatsPage';
+import EmotionPage from './pages/EmotionPage';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -14,6 +16,8 @@ function App() {
       case 'pills': return <PillsPage />;
       case 'water': return <WaterPage />;
       case 'stool': return <StoolPage />;
+
+      case 'mood': return <EmotionPage />;
       case 'stats': return <StatsPage />;
       default: return <HomePage onNavigate={setActiveTab} />;
     }
@@ -78,6 +82,7 @@ function App() {
       }}>
         <NavButton icon="🏠" label="Home" active={activeTab === 'home'} onClick={() => setActiveTab('home')} />
         <NavButton icon="💊" label="Pills" active={activeTab === 'pills'} onClick={() => setActiveTab('pills')} />
+        <NavButton icon="🙂" label="Mood" active={activeTab === 'mood'} onClick={() => setActiveTab('mood')} />
         <NavButton icon="💧" label="Water" active={activeTab === 'water'} onClick={() => setActiveTab('water')} />
         <NavButton icon="🚽" label="Stool" active={activeTab === 'stool'} onClick={() => setActiveTab('stool')} />
         <NavButton icon="📈" label="Charts" active={activeTab === 'stats'} onClick={() => setActiveTab('stats')} />
